@@ -2882,9 +2882,9 @@ codigoPixAtual = resultado.pix.qrcode;
                 document.getElementById('modalPixAmount').textContent = `R$ ${valor.toFixed(2)}`;
                 document.getElementById('pixCodeText').textContent = codigoPixAtual;
                 
-                const dataExpiracao = new Date(resultado.pix.expirationDate);
-                document.getElementById('expirationDatePix').textContent = 
-                    dataExpiracao.toLocaleDateString('pt-BR');
+               // const dataExpiracao = new Date(resultado.pix.expirationDate);
+               // document.getElementById('expirationDatePix').textContent = 
+                 //   dataExpiracao.toLocaleDateString('pt-BR');
 
                 const qrcodeContainer = document.getElementById('qrcodePixCanvas');
                 qrcodeContainer.innerHTML = '';
