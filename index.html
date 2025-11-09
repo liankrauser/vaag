@@ -2692,52 +2692,48 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
 
 <!-- Modal PIX - ADICIONE ANTES DO </body> -->
     <div id="pixModalVakinha" class="modal-pix">
-        <div class="modal-pix-content">
-            <button class="close-modal-pix" onclick="fecharModalPix()">&times;</button>
-            
-            <div id="loadingPixScreen" class="loading-pix">
-                <div class="spinner-pix"></div>
-                <p>Gerando seu PIX...</p>
+    <div class="modal-pix-content">
+        <button class="close-modal-pix" onclick="fecharModalPix()">&times;</button>
+        
+        <div id="loadingPixScreen" class="loading-pix">
+            <div class="spinner-pix"></div>
+            <p>Gerando seu PIX...</p>
+        </div>
+
+        <div id="pixContentScreen" style="display: none;">
+            <div class="modal-pix-header">
+                <h2>PIX Gerado com Sucesso</h2>
+                <div class="amount" id="modalPixAmount"></div>
             </div>
-
-            <div id="pixContentScreen" style="display: none;">
-                <div class="modal-pix-header">
-                    <h2>PIX Gerado com Sucesso</h2>
-                    <div class="amount" id="modalPixAmount"></div>
-                </div>
-
-                <div class="qrcode-container-pix">
-                    <div id="qrcodePixCanvas"></div>
-                </div>
-
-                <div class="pix-code-section">
-                    <p style="text-align: center; font-weight: bold; margin-bottom: 8px;">
-                        Código PIX Copia e Cola
-                    </p>
-                    <div class="pix-code-box" id="pixCodeText"></div>
-                    <button class="copy-btn-pix" onclick="copiarCodigoPix()">
-                        Copiar Código PIX
-                    </button>
-                </div>
-
-                
-    <div style="margin-top: 15px; padding: 15px; background: #e7f5ff; border-radius: 10px; border-left: 4px solid #1890ff;">
-    <p style="margin: 0; color: #0066cc; font-size: 0.9rem;">
-        <strong>✓ Verificando pagamento automaticamente...</strong><br>
-        <small>Assim que o pagamento for confirmado, você receberá uma notificação aqui.</small>
-    </p>
-</div>
-</div>
+            <div class="qrcode-container-pix">
+                <div id="qrcodePixCanvas"></div>
+            </div>
+            <div class="pix-code-section">
+                <p style="text-align: center; font-weight: bold; margin-bottom: 8px;">
+                    Código PIX Copia e Cola
+                </p>
+                <div class="pix-code-box" id="pixCodeText"></div>
+                <button class="copy-btn-pix" onclick="copiarCodigoPix()">
+                    Copiar Código PIX
+                </button>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #e7f5ff; border-radius: 10px; border-left: 4px solid #1890ff;">
+                <p style="margin: 0; color: #0066cc; font-size: 0.9rem;">
+                    <strong>✓ Verificando pagamento automaticamente...</strong><br>
+                    <small>Assim que o pagamento for confirmado, você receberá uma notificação aqui.</small>
+                </p>
+            </div>
         </div>
 
-<div id="errorPixScreen" style="display: none; text-align: center; padding: 20px;">
-    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-        <strong>Ops!</strong> Ocorreu um erro ao gerar o PIX. Tente novamente.
-    </div>
-    <button class="copy-btn-pix" onclick="fecharModalPix()">Fechar</button>
-</div>
+        <div id="errorPixScreen" style="display: none; text-align: center; padding: 20px;">
+            <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <strong>Ops!</strong> Ocorreu um erro ao gerar o PIX. Tente novamente.
+            </div>
+            <button class="copy-btn-pix" onclick="fecharModalPix()">Fechar</button>
         </div>
     </div>
+</div>
 
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
