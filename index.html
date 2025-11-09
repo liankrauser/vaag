@@ -2721,8 +2721,14 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
                 </div>
 
                 <div style="text-align: center; color: #6c757d; font-size: 0.9rem; margin-top: 20px;">
-                    Este PIX expira em <strong id="expirationDatePix"></strong>
-                </div>
+    Este PIX expira em <strong id="expirationDatePix"></strong>
+    <div style="margin-top: 15px; padding: 15px; background: #e7f5ff; border-radius: 10px; border-left: 4px solid #1890ff;">
+        <p style="margin: 0; color: #0066cc; font-size: 0.9rem;">
+            <strong>✓ Verificando pagamento automaticamente...</strong><br>
+            <small>Assim que o pagamento for confirmado, você receberá uma notificação aqui.</small>
+        </p>
+    </div>
+</div>
             </div>
 
             <div id="errorPixScreen" style="display: none; text-align: center; padding: 20px;">
@@ -2744,9 +2750,91 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
             authToken: 'Basic cGtfMUh3RFJGd3hVakhudXdUbE5zMVVHMTZOUXhhNS05MUlwV0ZpT0ZHd2JqVG82cE5JOnNrX1BqSjJPdlJzRmZDeXB5a3dCdzV3SjNUUHFJa09EbVJDU19ORi1IVk83dDk2c1p3OA=='
         };
 
-        let codigoPixAtual = '';
+       let codigoPixAtual = '';
+let transactionIdAtual = null;
+let verificacaoInterval = null;
 
-        async function gerarPixVakinha(valor) {
+// FUNÇÃO NOVA - Verificar se PIX foi pago
+async function verificarStatusPagamento(transactionId) {
+    try {
+        const response = await fetch(`https://api.nivuspayments.com.br/v1/transactions/${transactionId}`, {
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+                'authorization': 'Basic cGtfMUh3RFJGd3hVakhudXdUbE5zMVVHMTZOUXhhNS05MUlwV0ZpT0ZHd2JqVG82cE5JOnNrX1BqSjJPdlJzRmZDeXB5a3dCdzV3SjNUUHFJa09EbVJDU19ORi1IVk83dDk2c1p3OA=='
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao verificar pagamento');
+        const resultado = await response.json();
+        
+        console.log('Status do pagamento:', resultado.status);
+
+        // Se pagamento confirmado
+        if (resultado.status === 'paid') {
+            clearInterval(verificacaoInterval);
+            mostrarPagamentoConfirmado(resultado);
+        }
+
+        return resultado;
+
+    } catch (error) {
+        console.error('Erro ao verificar status:', error);
+    }
+}
+
+// FUNÇÃO NOVA - Mostrar tela de sucesso
+function mostrarPagamentoConfirmado(dados) {
+    const pixContent = document.getElementById('pixContentScreen');
+    
+    pixContent.innerHTML = `
+        <div style="text-align: center; padding: 30px;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #24CA68 0%, #009D4E 100%); 
+                        border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; 
+                        justify-content: center; animation: scaleIn 0.5s ease;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 style="color: #24CA68; font-size: 2rem; margin-bottom: 15px;">
+                Pagamento Confirmado!
+            </h2>
+            <p style="color: #333; font-size: 1.2rem; margin-bottom: 10px;">
+                Valor: <strong>R$ ${(dados.paidAmount / 100).toFixed(2)}</strong>
+            </p>
+            <p style="color: #6c757d; margin-bottom: 30px;">
+                Obrigado por sua doação para Rio Bonito do Iguaçu!
+            </p>
+            <button class="copy-btn-pix" onclick="fecharModalPix()" style="max-width: 300px; margin: 0 auto;">
+                Fechar
+            </button>
+        </div>
+        <style>
+            @keyframes scaleIn {
+                from { transform: scale(0); }
+                to { transform: scale(1); }
+            }
+        </style>
+    `;
+}
+
+// FUNÇÃO NOVA - Iniciar verificação automática
+function iniciarVerificacaoAutomatica(transactionId) {
+    // Verifica a cada 3 segundos
+    verificacaoInterval = setInterval(() => {
+        verificarStatusPagamento(transactionId);
+    }, 3000);
+
+    // Para após 15 minutos
+    setTimeout(() => {
+        if (verificacaoInterval) {
+            clearInterval(verificacaoInterval);
+            console.log('Verificação automática encerrada');
+        }
+    }, 15 * 60 * 1000);
+}
+
+async function gerarPixVakinha(valor) {
             const modal = document.getElementById('pixModalVakinha');
             const loadingScreen = document.getElementById('loadingPixScreen');
             const pixContent = document.getElementById('pixContentScreen');
@@ -2790,7 +2878,11 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
                 if (!response.ok) throw new Error('Erro na requisição');
 
                 const resultado = await response.json();
-                codigoPixAtual = resultado.pix.qrcode;
+
+// ADICIONE ESTA LINHA
+transactionIdAtual = resultado.id;
+
+codigoPixAtual = resultado.pix.qrcode;
 
                 document.getElementById('modalPixAmount').textContent = `R$ ${valor.toFixed(2)}`;
                 document.getElementById('pixCodeText').textContent = codigoPixAtual;
@@ -2812,9 +2904,13 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
                 });
 
                 loadingScreen.style.display = 'none';
-                pixContent.style.display = 'block';
+pixContent.style.display = 'block';
 
-            } catch (error) {
+// ADICIONE ESTAS LINHAS
+iniciarVerificacaoAutomatica(transactionIdAtual);
+console.log('Verificação automática iniciada para transaction:', transactionIdAtual);
+
+} catch (error) {
                 console.error('Erro ao gerar PIX:', error);
                 loadingScreen.style.display = 'none';
                 errorScreen.style.display = 'block';
@@ -2835,8 +2931,14 @@ src="https://www.facebook.com/tr?id=703221955744453&ev=PageView&noscript=1"
         }
 
         function fecharModalPix() {
-            document.getElementById('pixModalVakinha').classList.remove('active');
-        }
+    // Para a verificação quando fechar
+    if (verificacaoInterval) {
+        clearInterval(verificacaoInterval);
+        verificacaoInterval = null;
+    }
+    
+    document.getElementById('pixModalVakinha').classList.remove('active');
+}
     </script>
 </body>
 
